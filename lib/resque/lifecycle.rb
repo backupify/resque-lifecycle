@@ -16,7 +16,7 @@ module Resque
       # responds to #[]=.
       #
       def push(queue, item)
-        if item.respond_to?(:[]=)
+        if item.respond_to?(:[]=) && !Resque.redis.sismember('resque_lifecycle_exclude', item['class'])
           exists = item.respond_to?(:[]) && item['created_at']
           item['created_at'] = Time.now.to_i unless exists
         end

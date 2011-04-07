@@ -26,4 +26,11 @@ class LifecycleTest < Test::Unit::TestCase
     assert_equal item.object_id, ResqueMock.push('queue', item).object_id
   end
 
+  should 'honor classes in the exclusions list' do
+    Resque.redis.sadd('resque_lifecycle_exclude', 'ExcludedJob')
+    ResqueMock.push('queue', {'class' => 'ExcludedJob'})
+    job = ResqueMock.pop('queue')
+    assert_nil job['created_at']
+  end
+
 end
